@@ -1,12 +1,46 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Bootstrap demo</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
-  </head>
-  <body>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
-  </body>
-</html>
+<?php
+include 'header.php';
+include 'doviz.php';
+?>
+<section class="m-5">
+    <div class="container">
+        <div class="row">
+            <h2 class="text-center">Güncel Döviz Kurları</h2>
+            <hr>
+            <?php
+            //dovizleri çek
+            $query = $db->prepare("SELECT * FROM dovizler");
+            $query->execute();
+            $dovizler = $query->fetchAll(PDO::FETCH_OBJ);
+
+            foreach ($dovizler as $doviz) { ?>
+                <div class="col-md-3 mb-5">
+                    <div class="card" style="width: 18rem;">
+                        <div class="card-body">
+                            <h5 class="card-title p-2"><?= $doviz->doviz_adi ?></h5>
+                            <h6 class="card-subtitle p-2 text-muted"><span class="text-success">Satış : <?= getDoviz($doviz->doviz_kodu, 'Buying') ?> ₺</span></h6>
+                            <h6 class="card-subtitle p-2 text-muted"><span class="text-danger">Alış : <?= getDoviz($doviz->doviz_kodu, 'Selling') ?> ₺ </span></h6>
+                            <div class="islemler">
+                                <?php
+                                //takibe alındıysa butonu gizle
+                                $takip_sorgu = $db->prepare("SELECT * FROM doviz_takip WHERE doviz_id = :doviz_id and uye_id = :uye_id");
+                                $takip_sorgu->execute(array(
+                                    'uye_id' => $kullanicicek['id'],
+                                    'doviz_id' => $doviz->id
+                                ));
+                                $takip_say = $takip_sorgu->rowCount();
+                                if ($takip_say < 1) { ?>
+                                    <a href="takip.php?takip=ok&id=<?= $doviz->id ?>" class="card-link btn btn-success">Takibe Al</a>
+                                <?php } else { ?>
+                                    <a href="takip.php?takip=ok&id=<?= $doviz->id ?>" class="card-link btn btn-danger">Takibi Bırak</a>
+                                <?php } ?>
+                                <a href="#" class="card-link btn btn-primary">Detaylı İncele</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <?php } ?>
+        </div>
+    </div>
+</section>
+<?php include 'footer.php'; ?>
