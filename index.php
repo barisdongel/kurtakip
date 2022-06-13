@@ -8,10 +8,6 @@ include 'doviz.php';
             <h2 class="text-center">Güncel Döviz Kurları</h2>
             <hr>
             <?php
-            //dovizleri çek
-            $query = $db->prepare("SELECT * FROM dovizler");
-            $query->execute();
-            $dovizler = $query->fetchAll(PDO::FETCH_OBJ);
 
             foreach ($dovizler as $doviz) { ?>
                 <div class="col-md-3 mb-5">

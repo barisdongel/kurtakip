@@ -1,4 +1,17 @@
-<?php include 'session.php'; ?>
+<?php include 'session.php';
+
+if (isset($_POST['arama'])) {
+    $aranan = $_POST['aranan'];
+    $query = $db->prepare("SELECT * FROM dovizler WHERE doviz_adi LIKE '%$aranan%'");
+    $query->execute();
+    $dovizler = $query->fetchAll(PDO::FETCH_OBJ);
+} else {
+    //dovizleri çek
+    $query = $db->prepare("SELECT * FROM dovizler");
+    $query->execute();
+    $dovizler = $query->fetchAll(PDO::FETCH_OBJ);
+}
+?>
 
 <!doctype html>
 <html lang="en">
@@ -21,6 +34,9 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item">
+                            <a class="nav-link" href="admin/giris.php">Admin Girişi</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link active" href="index.php">Güncel Kurlar</a>
                         </li>
                         <li class="nav-item">
@@ -30,9 +46,9 @@
                             <a class="nav-link" href="cikis.php">Çıkış Yap</a>
                         </li>
                     </ul>
-                    <form class="d-flex" role="search">
-                        <input class="form-control me-2" type="search" placeholder="Doviz Ara" aria-label="Search">
-                        <button class="btn btn-outline-success" type="submit">Ara</button>
+                    <form class="d-flex" role="search" action="" method="POST">
+                        <input class="form-control me-2" type="search" name="aranan" placeholder="Doviz Ara" aria-label="Search">
+                        <button class="btn btn-outline-success" name="arama" type="submit">Ara</button>
                     </form>
                 </div>
             </div>
